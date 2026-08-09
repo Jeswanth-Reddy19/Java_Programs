@@ -1,0 +1,178 @@
+package observation;
+
+import java.util.Scanner;
+
+class Account {
+    private String acctno;
+    private double balance;
+    private String accttype;
+
+    public Account(String acctno, double balance, String accttype) {
+        this.acctno = acctno;
+        this.balance = balance;
+        this.accttype = accttype;
+    }
+
+    public String getAcctno() {
+        return acctno;
+    }
+
+    public void setAcctno(String acctno) {
+        this.acctno = acctno;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public String getAccttype() {
+        return accttype;
+    }
+
+    public void setAccttype(String accttype) {
+        this.accttype = accttype;
+    }
+
+    public void deposit(double amount) {
+        balance += amount;
+        System.out.println("Deposit Successful.");
+        System.out.println("Current Balance: " + balance);
+    }
+
+    public void withdraw(double amount) {
+        if (amount <= balance) {
+            balance -= amount;
+            System.out.println("Withdrawal Successful.");
+            System.out.println("Current Balance: " + balance);
+        } else {
+            System.out.println("Insufficient Balance.");
+        }
+    }
+
+    public void transfer(Account receiver, double amount) {
+        if (amount <= balance) {
+            balance -= amount;
+            receiver.balance += amount;
+
+            System.out.println("Transfer Successful.");
+            System.out.println("Your Balance: " + balance);
+        } else {
+            System.out.println("Insufficient Balance.");
+        }
+    }
+
+    public void displayDetails() {
+        System.out.println("\nAccount Number : " + acctno);
+        System.out.println("Account Type   : " + accttype);
+        System.out.println("Balance        : " + balance);
+    }
+}
+
+// Child Class
+class CurrentAccount extends Account {
+
+    public CurrentAccount(String acctno, double balance) {
+        super(acctno, balance, "Current");
+    }
+
+    @Override
+    public void withdraw(double amount) {
+        if (amount <= getBalance() + 5000) {
+            setBalance(getBalance() - amount);
+            System.out.println("Withdrawal Successful (Overdraft Allowed).");
+            System.out.println("Balance: " + getBalance());
+        } else {
+            System.out.println("Overdraft Limit Exceeded.");
+        }
+    }
+}
+
+// Child Class
+class SavingsAccount extends Account {
+
+    public SavingsAccount(String acctno, double balance) {
+        super(acctno, balance, "Savings");
+    }
+
+    @Override
+    public void withdraw(double amount) {
+        if (getBalance() - amount >= 500) {
+            setBalance(getBalance() - amount);
+            System.out.println("Withdrawal Successful.");
+            System.out.println("Balance: " + getBalance());
+        } else {
+            System.out.println("Minimum Balance of 500 must be maintained.");
+        }
+    }
+}
+
+public class BankManagement {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Choose Account Type");
+        System.out.println("1. Savings");
+        System.out.println("2. Current");
+        int type = sc.nextInt();
+
+        Account account;
+
+        System.out.print("Enter Account Number: ");
+        String accNo = sc.next();
+
+        System.out.print("Enter Initial Balance: ");
+        double bal = sc.nextDouble();
+
+        if (type == 1) {
+            account = new SavingsAccount(accNo, bal);
+        } else {
+            account = new CurrentAccount(accNo, bal);
+        }
+
+        int choice;
+
+        do {
+            System.out.println("\n----- BANK MENU -----");
+            System.out.println("1. Deposit");
+            System.out.println("2. Withdraw");
+            System.out.println("3. Display Details");
+            System.out.println("4. Exit");
+
+            System.out.print("Enter Choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.print("Enter Amount: ");
+                    account.deposit(sc.nextDouble());
+                    break;
+
+                case 2:
+                    System.out.print("Enter Amount: ");
+                    account.withdraw(sc.nextDouble());
+                    break;
+
+                case 3:
+                    account.displayDetails();
+                    break;
+
+                case 4:
+                    System.out.println("Thank You!");
+                    break;
+
+                default:
+                    System.out.println("Invalid Choice.");
+            }
+
+        } while (choice != 4);
+
+        sc.close();
+    }
+}
